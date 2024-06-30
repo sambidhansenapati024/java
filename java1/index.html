@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Data Table</title>
+  <style>
+    /* Style the table as needed */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 8px;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>User Data</h2>
+
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+  </div>
+  <div>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+  </div>
+  <button onclick="addData()">Submit</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>sNo.</th>
+        <th>Name</th>
+        <th>Email Address</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableData">
+      </tbody>
+  </table>
+
+  <script>
+    let data = []; // Array to store user data
+    let sNo = 1; // Counter for serial numbers
+
+    function addData() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      if (name && email) { // Ensure fields are filled
+        data.push({ sNo: sNo, name: name, email: email }); // Add new data to array
+        updateTable();
+        sNo++; // Increment serial number for next entry
+        document.getElementById('name').value = ""; // Clear input fields
+        document.getElementById('email').value = "";
+      } else {
+        alert("Please fill all fields.");
+      }
+    }
+
+    function updateTable() {
+      const tableBody = document.getElementById('tableData');
+      tableBody.innerHTML = ""; // Clear existing rows
+      data.forEach(item => {
+        const row = tableBody.insertRow();
+        row.insertCell().textContent = item.sNo;
+        row.insertCell().textContent = item.name;
+        row.insertCell().textContent = item.email;
+
+        // Action Buttons
+        const actionCell = row.insertCell();
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => editData(item.sNo));
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => deleteData(item.sNo));
+
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
+      });
+    }
+
+    function editData(sNo) {
+      // Find the data to edit
+      const index = data.findIndex(item => item.sNo === sNo);
+
+      if (index !== -1) {
+        const item = data[index];
+        document.getElementById('name').value = item.name;
+        document.getElementById('email').value = item.email;
+
+        // Change Action buttons to Cross
+        const row = document.getElementById('tableData').rows[index];
+        const actionCell = row.cells[3];
+        actionCell.innerHTML = ''; // Clear existing buttons
+        const crossButton = document.createElement('button');
+        crossButton.textContent = 'Cross';
+        crossButton.addEventListener('click', () => saveChanges(sNo));
+        actionCell.appendChild(crossButton);
+      }
+    }
+
+    function saveChanges(sNo) {
+      // Find the index of the data to update
+      const index = data.findIndex(item => item.sNo === sNo);
+      if (index !== -1) {
+        // Update data with new values from input fields
+        data[index].name = document.getElementById('name').value;
+        data[index].email = document.getElementById('email').value;
+        // Update the table
+        updateTable();
+        // Clear input fields
+        document.getElementById('name').value = "";
+        document.getElementById('email').value = "";
+      }
+    }
+
+    function deleteData(sNo) {
+      // Find the index of the data to delete
+      const index = data.findIndex(item => item.sNo === sNo);
+
+      if (index !== -1) {
+        data.splice(index, 1); // Remove the data from the array
+        updateTable(); // Update the table
+      }
+    }
+
+    // Initial Table Display
+    updateTable();
+  </script>
+
+</body>
+</html>
